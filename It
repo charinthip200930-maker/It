@@ -1,0 +1,291 @@
+-- ===================================================
+-- Blox Fruits Thai Hub (Horizontal UI + Halloween Event)
+-- ===================================================
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = " Blox Fruits Thai Hub | แนวนอน + Halloween",
+   LoadingTitle = "กำลังโหลดสคริปต์ภาษาไทย...",
+   LoadingSubtitle = "by Gemini AI",
+   ConfigurationSaving = { Enabled = false },
+   Discord = { Enabled = false },
+   KeySystem = false
+})
+
+-- 변 변 변 변 변 (Variables)
+local AutoFarm = false
+local AutoCollectFruit = false
+local NoClipEnabled = false
+local InfJumpEnabled = false
+local FlyEnabled = false
+
+-- Halloween Variables
+local AutoCollectCandy = false
+local AutoGacha = false
+local AutoGreatPumpkin = false
+local AutoTrickOrTreat = false
+
+-- ===================================================
+-- TAB 1: ระบบฟาร์มหลัก (Main Farm)
+-- ===================================================
+local MainTab = Window:CreateTab("ฟาร์มหลัก", 4483362458)
+
+MainTab:CreateToggle({
+   Name = "เปิดระบบ ออโต้ฟาร์มเลเวล (Auto Farm Level)",
+   CurrentValue = false,
+   Callback = function(Value) AutoFarm = Value end,
+})
+
+task.spawn(function()
+   while task.wait(0.5) do
+      if AutoFarm then
+         pcall(function()
+            local player = game.Players.LocalPlayer
+            for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+               if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                  player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)
+                  game:GetService("VirtualUser"):CaptureController()
+                  game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0))
+                  break
+               end
+            end
+         end)
+      end
+   end
+end)
+
+-- ===================================================
+-- TAB 2: กิจกรรมฮาโลวีน (Halloween Event) *[เพิ่มใหม่]*
+-- ===================================================
+local EventTab = Window:CreateTab("กิจกรรม Halloween", 4483362458)
+
+EventTab:CreateSection("ระบบฟาร์มลูกอม & สุ่มของ")
+
+EventTab:CreateToggle({
+   Name = "เก็บฟักทอง & Candy Corn อัตโนมัติ (Auto Collect Candy)",
+   CurrentValue = false,
+   Callback = function(Value) AutoCollectCandy = Value end,
+})
+
+EventTab:CreateToggle({
+   Name = "สุ่ม Spooky Gacha อัตโนมัติ (Auto Spooky Gacha)",
+   CurrentValue = false,
+   Callback = function(Value) AutoGacha = Value end,
+})
+
+EventTab:CreateSection("ระบบบอส & กิจกรรมพิเศษ")
+
+EventTab:CreateToggle({
+   Name = "ออโต้ตีบอสฟักทองยักษ์ (Auto Great Pumpkin Boss)",
+   CurrentValue = false,
+   Callback = function(Value) AutoGreatPumpkin = Value end,
+})
+
+EventTab:CreateToggle({
+   Name = "ออโต้เคาะประตูช่วง Harvest Moon (Auto Trick or Treat)",
+   CurrentValue = false,
+   Callback = function(Value) AutoTrickOrTreat = Value end,
+})
+
+-- Loop เก็บ Candy Corn & ฟักทอง
+task.spawn(function()
+   while task.wait(1) do
+      if AutoCollectCandy then
+         pcall(function()
+            for _, v in pairs(game.Workspace:GetChildren()) do
+               if v.Name == "Pumpkin" or string.find(v.Name, "Candy") then
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                  task.wait(0.3)
+               end
+            end
+         end)
+      end
+   end
+end)
+
+-- Loop สุ่ม Spooky Gacha
+task.spawn(function()
+   while task.wait(5) do
+      if AutoGacha then
+         pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SpookyGacha", "Roll")
+         end)
+      end
+   end
+end)
+
+-- Loop ล่าบอสฟักทองยักษ์ (The Great Pumpkin)
+task.spawn(function()
+   while task.wait(1) do
+      if AutoGreatPumpkin then
+         pcall(function()
+            local boss = game:GetService("Workspace").Enemies:FindFirstChild("Great Pumpkin") 
+               or game:GetService("Workspace").Enemies:FindFirstChild("The Great Pumpkin")
+            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 12, 0)
+               game:GetService("VirtualUser"):CaptureController()
+               game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0))
+            end
+         end)
+      end
+   end
+end)
+
+-- Loop Trick or Treat
+task.spawn(function()
+   while task.wait(2) do
+      if AutoTrickOrTreat then
+         pcall(function()
+            for _, house in pairs(game.Workspace:GetChildren()) do
+               if house.Name == "TrickOrTreatDoor" then
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = house.CFrame
+                  fireclickdetector(house:FindFirstChildOfClass("ClickDetector"))
+               end
+            end
+         end)
+      end
+   end
+end)
+
+-- ===================================================
+-- TAB 3: เก็บผลไม้ (Collect Fruits)
+-- ===================================================
+local FruitTab = Window:CreateTab("เก็บผลไม้", 4483362458)
+
+FruitTab:CreateToggle({
+   Name = "เปิดระบบ เก็บผลไม้อัตโนมัติ (Auto Collect Fruit)",
+   CurrentValue = false,
+   Callback = function(Value) AutoCollectFruit = Value end,
+})
+
+task.spawn(function()
+   while task.wait(1) do
+      if AutoCollectFruit then
+         pcall(function()
+            for _, v in pairs(game.Workspace:GetChildren()) do
+               if v:IsA("Tool") and string.find(v.Name, "Fruit") then
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Handle.CFrame
+                  task.wait(0.5)
+               end
+            end
+         end)
+      end
+   end
+end)
+
+-- ===================================================
+-- TAB 4: เคลื่อนที่ & วาป (Teleport & Movement)
+-- ===================================================
+local MoveTab = Window:CreateTab("เคลื่อนที่ & วาป", 4483362458)
+
+MoveTab:CreateSection("ระบบวาร์ปไปเกาะต่างๆ")
+
+local IslandList = {
+   ["เกาะเริ่มต้น (Starter Island)"] = Vector3.new(1059, 16, 1549),
+   ["เกาะกลาง (Middle Town)"] = Vector3.new(-690, 15, 1582),
+   ["เกาะจังเกิ้ล (Jungle)"] = Vector3.new(-1612, 37, 149),
+   ["เกาะหิมะ (Snow Island)"] = Vector3.new(1385, 87, -1298),
+   ["เกาะทะเลทราย (Desert)"] = Vector3.new(1094, 6, 4193),
+   ["เกาะลอยฟ้า (Sky Island)"] = Vector3.new(-4832, 717, -2636)
+}
+
+local SelectedIsland = "เกาะเริ่มต้น (Starter Island)"
+
+MoveTab:CreateDropdown({
+   Name = "เลือกเกาะที่ต้องการไป",
+   Options = {"เกาะเริ่มต้น (Starter Island)", "เกาะกลาง (Middle Town)", "เกาะจังเกิ้ล (Jungle)", "เกาะหิมะ (Snow Island)", "เกาะทะเลทราย (Desert)", "เกาะลอยฟ้า (Sky Island)"},
+   CurrentOption = "เกาะเริ่มต้น (Starter Island)",
+   Callback = function(Option) SelectedIsland = Option end,
+})
+
+MoveTab:CreateButton({
+   Name = "วาร์ปไปเกาะที่เลือก (Teleport)",
+   Callback = function()
+      local targetPos = IslandList[SelectedIsland]
+      if targetPos then
+         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+      end
+   end,
+})
+
+MoveTab:CreateSection("ระบบความสามารถพิเศษ")
+
+MoveTab:CreateToggle({
+   Name = "เดินทะลุกำแพง (No Clip)",
+   CurrentValue = false,
+   Callback = function(Value) NoClipEnabled = Value end,
+})
+
+MoveTab:CreateToggle({
+   Name = "กระโดดไม่จำกัด (Infinite Jump)",
+   CurrentValue = false,
+   Callback = function(Value) InfJumpEnabled = Value end,
+})
+
+MoveTab:CreateToggle({
+   Name = "ระบบบิน (Fly)",
+   CurrentValue = false,
+   Callback = function(Value)
+      FlyEnabled = Value
+      local player = game.Players.LocalPlayer
+      local char = player.Character
+      if FlyEnabled then
+         local bv = Instance.new("BodyVelocity")
+         bv.Name = "FlyVelocity"
+         bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+         bv.Velocity = Vector3.new(0, 0.1, 0)
+         bv.Parent = char.HumanoidRootPart
+      else
+         if char.HumanoidRootPart:FindFirstChild("FlyVelocity") then
+            char.HumanoidRootPart.FlyVelocity:Destroy()
+         end
+      end
+   end,
+})
+
+-- Connections
+game:GetService("RunService").Stepped:Connect(function()
+   if NoClipEnabled then
+      pcall(function()
+         for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide = false end
+         end
+      end)
+   end
+end)
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+   if InfJumpEnabled then
+      game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+   end
+end)
+
+-- ===================================================
+-- ปุ่มเปิด/ปิด GUI (Toggle UI Button)
+-- ===================================================
+local ScreenGui = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleButton.Position = UDim2.new(0.02, 0, 0.2, 0)
+ToggleButton.Size = UDim2.new(0, 110, 0, 45)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Text = "เปิด / ปิด สคริปต์"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 16.000
+
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = ToggleButton
+
+local isGuiVisible = true
+ToggleButton.MouseButton1Click:Connect(function()
+   isGuiVisible = not isGuiVisible
+   game:GetService("CoreGui").Rayfield.Enabled = isGuiVisible
+end)
